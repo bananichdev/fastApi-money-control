@@ -1,7 +1,6 @@
 from os import environ
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine, MetaData
 
 from databases import Database
 
@@ -14,4 +13,4 @@ engine = create_engine(
 
 db = Database(POSTGRESQL_DB_URL)
 
-Base = declarative_base()
+metadata = MetaData()

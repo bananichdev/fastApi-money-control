@@ -1,32 +1,23 @@
-from sqlalchemy import Column, ForeignKey, Integer, Float, String, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import Table, Column, ForeignKey, Integer, Float, String, TIMESTAMP
 
-from .db import Base
+from .db import metadata
 
 from datetime import datetime
 
 
-class Category(Base):
-    __tablename__ = 'categories'
+categories = Table(
+    "categories",
+    metadata,
+    Column('id', Integer, primary_key=True, index=True),
+    Column('name', String, unique=True, nullable=False, index=True)
+)
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False, index=True)
-
-    products = relationship('Product', back_populates='category')
-
-
-class Product(Base):
-    __tablename__ = "products"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False, index=True)
-    price = Column(Float, nullable=False, index=True)
-    created_at = Column(DateTime, nullable=False, index=True, default=datetime.now())
-    category_id = Column(Integer, ForeignKey('categories.id'))
-
-    category = relationship('Category', back_populates='products')
-
-    @hybrid_property
-    def category_name(self):
-        return self.category.name if self.category else None
+products = Table(
+    "products",
+    metadata,
+    Column('id', Integer, primary_key=True, index=True),
+    Column('name', String, nullable=False, index=True),
+    Column('price', Float, nullable=False, index=True),
+    Column('created_at', TIMESTAMP, nullable=False, index=True, default=datetime.now()),
+    Column('category_id', Integer, ForeignKey('categories.id'))
+)

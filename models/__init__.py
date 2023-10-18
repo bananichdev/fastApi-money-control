@@ -1,3 +1,3 @@
-from .db import db, engine, Base
-from .models import Product, Category
-from .schemas import CategorySchema
+from .db import db, engine, metadata
+from .models import categories, products
+from .schemas import CategorySchema, ProductSchema

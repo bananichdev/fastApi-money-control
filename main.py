@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 from routers import product_router, category_router
 
-from models import db, Base, engine
+from models import db, metadata, engine
 
 app = FastAPI()
-
-Base.metadata.create_all(engine)
 
 
 @app.on_event('startup')
