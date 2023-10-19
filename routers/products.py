@@ -28,18 +28,41 @@ async def get_products(read_all: bool, sorting_by_price_from_expensive_to_cheap:
         content = await db.fetch_all(query=query)
         return content
     elif select_by_category and select_by_date:
-        query = (select([products.c.id, products.c.name, products.c.price,
-                         products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
-                 .where(and_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
-                 .select_from(products.join(categories)))
-
+        match sorting_by_price_from_expensive_to_cheap:
+            case True:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(and_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories))).order_by(desc(products.c.price))
+            case False:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(and_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories))).order_by(asc(products.c.price))
+            case _:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(and_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories)))
         content = await db.fetch_all(query=query)
         return content
     elif select_by_date or select_by_category:
-        query = (select([products.c.id, products.c.name, products.c.price,
-                         products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
-                 .where(or_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
-                 .select_from(products.join(categories)))
+        match sorting_by_price_from_expensive_to_cheap:
+            case True:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(or_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories))).order_by(desc(products.c.price))
+            case False:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(or_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories))).order_by(asc(products.c.price))
+            case _:
+                query = (select([products.c.id, products.c.name, products.c.price,
+                                 products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
+                         .where(or_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
+                         .select_from(products.join(categories)))
         content = await db.fetch_all(query=query)
         return content
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
