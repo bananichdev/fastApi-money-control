@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from datetime import datetime
+from datetime import date
 
 
 class CategorySchema(BaseModel):
@@ -15,7 +15,7 @@ class ProductSchema(BaseModel):
     id: int
     name: str
     price: float
-    created_at: datetime
+    created_at: date
     category_id: int
     category_name: str
 

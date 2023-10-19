@@ -1,8 +1,8 @@
-from sqlalchemy import Table, Column, ForeignKey, Integer, Float, String, TIMESTAMP
+from sqlalchemy import Table, Column, ForeignKey, Integer, Float, String, Date
 
 from .db import metadata
 
-from datetime import datetime
+from datetime import date
 
 
 categories = Table(
@@ -18,6 +18,6 @@ products = Table(
     Column('id', Integer, primary_key=True, index=True),
     Column('name', String, nullable=False, index=True),
     Column('price', Float, nullable=False, index=True),
-    Column('created_at', TIMESTAMP, nullable=False, index=True, default=datetime.now()),
+    Column('created_at', Date, nullable=False, index=True, default=date.today()),
     Column('category_id', Integer, ForeignKey('categories.id'))
 )
