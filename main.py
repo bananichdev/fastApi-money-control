@@ -18,10 +18,10 @@ async def shutdown():
 
 app.include_router(
     router=product_router,
-    prefix='/api/products'
+    prefix='/api/v1/products'
 )
 
 app.include_router(
     router=category_router,
-    prefix='/api/categories'
+    prefix='/api/v1/categories'
 )

@@ -2,19 +2,19 @@ from fastapi import APIRouter, HTTPException, Response
 from starlette import status
 
 from models import CategorySchema
-from asyncpg.exceptions import UniqueViolationError
+from asyncpg.exceptions import UniqueViolationError, ForeignKeyViolationError
 
 from controllers import read_categories, write_category, read_category, purge_category
 
 router = APIRouter()
 
 
-@router.get('/get', response_model=list[CategorySchema])
+@router.get('/', response_model=list[CategorySchema])
 async def get_categories():
     return await read_categories()
 
 
-@router.post('/add', response_model=CategorySchema)
+@router.post('/', response_model=CategorySchema)
 async def add_category(name: str):
     try:
         return await write_category(name=name)
@@ -22,10 +22,14 @@ async def add_category(name: str):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Category already exists')
 
 
-@router.delete('/delete')
+@router.delete('/', response_model=CategorySchema)
 async def delete_category(name: str):
     check_category = await read_category(name=name)
     if check_category:
-        await purge_category(name=name)
-        return Response(status_code=status.HTTP_200_OK)
+        try:
+            await purge_category(name=name)
+            return Response(status_code=status.HTTP_200_OK)
+        except ForeignKeyViolationError:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail='There are still products in the category')
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Category does not exist')

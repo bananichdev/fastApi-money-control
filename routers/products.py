@@ -8,7 +8,7 @@ from datetime import date
 router = APIRouter()
 
 
-@router.get('/get', response_model=list[ProductSchema])
+@router.get('/', response_model=list[ProductSchema])
 async def get_products(read_all: bool, sorting_by_price: bool = None,
                        select_by_date: date = None, select_by_category: str = None):
     try:
@@ -18,7 +18,7 @@ async def get_products(read_all: bool, sorting_by_price: bool = None,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
 
-@router.post('/add', response_model=ProductSchema)
+@router.post('/', response_model=ProductSchema)
 async def add_product(name: str, price: float, category_name: str):
     check_category = await read_category(name=category_name)
     if check_category:
@@ -26,7 +26,7 @@ async def add_product(name: str, price: float, category_name: str):
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Category does not exist')
 
 
-@router.delete('/delete')
+@router.delete('/')
 async def delete_product(product_id: int):
     check_product = await read_product(product_id=product_id)
     if check_product:
