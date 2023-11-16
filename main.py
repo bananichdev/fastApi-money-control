@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from routers import product_router, category_router
 
-from models import db, metadata, engine
+from models import db
 
 app = FastAPI()
 

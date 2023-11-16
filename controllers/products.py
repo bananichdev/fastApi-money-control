@@ -5,31 +5,33 @@ from models import db, products, categories
 from datetime import date
 
 
-async def read_products(sorting_by_price: bool, read_all: bool,
+async def read_products(read_all: bool, sorting_by_price_from_exp_to_cheap,
                         select_by_category: str, select_by_date: date):
     query = (select([products.c.id, products.c.name, products.c.price,
                      products.c.created_at, products.c.category_id, categories.c.name.label('category_name')])
              .select_from(products.join(categories)))
     if read_all:
-        if sorting_by_price is True:
+        if sorting_by_price_from_exp_to_cheap is True:
             query = query.order_by(desc(products.c.price))
-        elif sorting_by_price is False:
+        elif sorting_by_price_from_exp_to_cheap is False:
             query = query.order_by(asc(products.c.price))
         return await db.fetch_all(query=query)
     elif select_by_category and select_by_date:
         query = query.where(and_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
-        if sorting_by_price is True:
+        if sorting_by_price_from_exp_to_cheap is True:
             query = query.order_by(desc(products.c.price))
-        elif sorting_by_price is False:
+        elif sorting_by_price_from_exp_to_cheap is False:
             query = query.order_by(asc(products.c.price))
         return await db.fetch_all(query=query)
     elif select_by_category or select_by_date:
         query = query.where(or_(products.c.created_at == select_by_date, categories.c.name == select_by_category))
-        if sorting_by_price is True:
+        if sorting_by_price_from_exp_to_cheap is True:
             query = query.order_by(desc(products.c.price))
-        elif sorting_by_price is False:
+        elif sorting_by_price_from_exp_to_cheap is False:
             query = query.order_by(asc(products.c.price))
         return await db.fetch_all(query=query)
+    else:
+        raise BaseException
 
 
 async def write_product(name: str, price: float, category):
